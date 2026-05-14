@@ -42,8 +42,6 @@ struct PaywallView: View {
             }
             .padding(.horizontal, 32)
 
-            Spacer()
-
             // Monthly option
             VStack(spacing: 6) {
                 Button(action: { Task { await store.purchaseMonthly() } }) {

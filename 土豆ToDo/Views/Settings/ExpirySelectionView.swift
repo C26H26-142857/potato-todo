@@ -8,8 +8,8 @@ struct ExpirySelectionView: View {
     @State private var selectedTimers: Set<UUID> = []
     let onDone: () -> Void
 
-    private let maxHabits = 10
-    private let maxTimers = 3
+    private let maxHabits = StoreManager.maxFreeHabits
+    private let maxTimers = StoreManager.maxFreeTimers
 
     private var visibleHabits: [Habit] { habits.filter { !$0.isHidden } }
 
@@ -106,6 +106,11 @@ struct ExpirySelectionView: View {
             }
             .navigationTitle("订阅已到期")
             .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("关闭") { onDone() }
+                }
+            }
             .onAppear {
                 if selectedHabits.isEmpty { preselect() }
             }

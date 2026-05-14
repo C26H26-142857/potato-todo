@@ -77,12 +77,12 @@ struct TaskButton: View {
         .frame(maxWidth: .infinity)
         .background(
             RoundedRectangle(cornerRadius: 20)
-                .fill(isDone ? Color(hex: "#FFD60A") :
+                .fill(isDone ? Color.brand :
                       (isThisTimerRunning ? Color(hex: "#FFE066") : .taskIncomplete))
         )
         .overlay(
             RoundedRectangle(cornerRadius: 20)
-                .strokeBorder(isThisTimerRunning ? Color(hex: "#FFD60A") : .clear, lineWidth: 3)
+                .strokeBorder(isThisTimerRunning ? Color.brand : .clear, lineWidth: 3)
         )
         .animation(.spring(response: 0.3, dampingFraction: 0.6), value: isDone)
     }

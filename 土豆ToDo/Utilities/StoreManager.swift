@@ -5,6 +5,9 @@ import SwiftUI
 final class StoreManager {
     static let shared = StoreManager()
 
+    static let maxFreeHabits = 10
+    static let maxFreeTimers = 3
+
     let monthlyID = "com.potato.todo.pro"
     let lifetimeID = "com.potato.todo.pro.lifetime"
     var monthlyProduct: Product?

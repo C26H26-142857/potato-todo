@@ -49,8 +49,8 @@ struct ContentView: View {
         guard !store.isSubscribed else { return }
         let ctx = AppConfig.sharedContainer.mainContext
         var desc = FetchDescriptor<Habit>(predicate: #Predicate { !$0.isHidden })
-        desc.fetchLimit = 11
-        guard let count = try? ctx.fetchCount(desc), count > 10 else { return }
+        desc.fetchLimit = StoreManager.maxFreeHabits + 1
+        guard let count = try? ctx.fetchCount(desc), count > StoreManager.maxFreeHabits else { return }
         showExpirySelection = true
     }
 

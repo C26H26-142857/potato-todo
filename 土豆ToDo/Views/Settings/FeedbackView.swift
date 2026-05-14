@@ -8,6 +8,7 @@ struct FeedbackView: View {
     @State private var showMailError = false
 
     var body: some View {
+        let isEmpty = message.trimmingCharacters(in: .whitespaces).isEmpty
         NavigationStack {
             VStack(spacing: 16) {
                 Text("告诉我们你的想法")
@@ -29,13 +30,11 @@ struct FeedbackView: View {
                         .font(.system(size: 17, weight: .semibold))
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 14)
-                        .background(message.trimmingCharacters(in: .whitespaces).isEmpty
-                                    ? Color.gray.opacity(0.3) : Color.brand)
-                        .foregroundColor(message.trimmingCharacters(in: .whitespaces).isEmpty
-                                         ? .gray : .black)
+                        .background(isEmpty ? Color.gray.opacity(0.3) : Color.brand)
+                        .foregroundColor(isEmpty ? .gray : .black)
                         .clipShape(RoundedRectangle(cornerRadius: 14))
                 }
-                .disabled(message.trimmingCharacters(in: .whitespaces).isEmpty)
+                .disabled(isEmpty)
             }
             .padding(16)
             .navigationTitle("建议与反馈")

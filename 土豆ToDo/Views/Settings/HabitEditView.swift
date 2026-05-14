@@ -148,19 +148,19 @@ struct HabitEditView: View {
             let habitCount = existingHabits.count
             let timerCount = existingHabits.filter { $0.enableTimer }.count
 
-            if habitCount >= 10 {
+            if habitCount >= StoreManager.maxFreeHabits {
                 store.paywallReason = .habitsLimit
                 showPaywall = true
                 return
             }
-            if enableTimer && timerCount >= 3 {
+            if enableTimer && timerCount >= StoreManager.maxFreeTimers {
                 store.paywallReason = .timerLimit
                 showPaywall = true
                 return
             }
         } else if let existing = habit, !store.isSubscribed, enableTimer, !existing.enableTimer {
             let timerCount = existingHabits.filter { $0.enableTimer }.count
-            if timerCount >= 3 {
+            if timerCount >= StoreManager.maxFreeTimers {
                 store.paywallReason = .timerLimit
                 showPaywall = true
                 return
