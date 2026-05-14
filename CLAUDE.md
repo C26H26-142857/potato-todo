@@ -14,6 +14,7 @@
 | `docs/tech-specs.md` | 改数据模型/架构 |
 | `docs/design-specs.md` | 改 UI/颜色/字体 |
 | `docs/implementation-steps.md` | 查看当前进度 |
+| `docs/smoke-test-checklist.md` | 改完代码后手动验证 |
 
 ## 架构速览
 
@@ -34,7 +35,14 @@
 
 **开发中:** 保持数据模型在应用、小组件两个 target 同步（改了 Model 就 copy 到 Widget 目录）。颜色用 `ColorConstants` 里的常量，别写死 hex。
 
-**开发后:** 更新 `dev-logs/YYYY-MM-DD.md`，勾选 `docs/implementation-steps.md` 完成项。
+**开发后:** 更新 `dev-logs/YYYY-MM-DD.md`，勾选 `docs/implementation-steps.md` 完成项。跑一遍 `docs/smoke-test-checklist.md`。
+
+## Git 规范
+
+- **新功能/改动:** 从 `main` 拉 `feature/xxx` 分支，改完合回 `main`
+- **分支命名:** `feature/功能名`（如 `feature/reminder-sound`）、`fix/问题描述`（如 `fix/widget-crash`）
+- **commit 信息:** 中文，简短说明做了什么（如 `新增提醒自定义音效`）
+- **不要直接在 main 上改代码**
 
 ## 硬约束
 
