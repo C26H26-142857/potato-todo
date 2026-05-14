@@ -22,7 +22,7 @@ struct StartTimerIntent: AppIntent {
     init() {}
     init(habitID: String) { self.habitID = habitID }
     func perform() async throws -> some IntentResult {
-        guard let uuid = UUID(uuidString: habitID) else { return .result() }; let ctx = WidgetContainer.makeContext()
+        guard let uuid = UUID(uuidString: habitID) else { return .result() }; let ctx = WidgetContainer.context
         var d = FetchDescriptor<Habit>(predicate: #Predicate { $0.id == uuid }); d.fetchLimit = 1
         guard let h = try? ctx.fetch(d).first else { return .result() }
         ctx.insert(TimerSession(startTime: Date(), habit: h))
@@ -38,7 +38,7 @@ struct StopTimerIntent: AppIntent {
     init() {}
     init(habitID: String) { self.habitID = habitID }
     func perform() async throws -> some IntentResult {
-        guard let uuid = UUID(uuidString: habitID) else { return .result() }; let ctx = WidgetContainer.makeContext()
+        guard let uuid = UUID(uuidString: habitID) else { return .result() }; let ctx = WidgetContainer.context
         var d = FetchDescriptor<Habit>(predicate: #Predicate { $0.id == uuid }); d.fetchLimit = 1
         guard let h = try? ctx.fetch(d).first else { return .result() }
         let now = Date()
@@ -57,7 +57,7 @@ struct ToggleCheckIntent: AppIntent {
     init() {}
     init(habitID: String) { self.habitID = habitID }
     func perform() async throws -> some IntentResult {
-        guard let uuid = UUID(uuidString: habitID) else { return .result() }; let ctx = WidgetContainer.makeContext()
+        guard let uuid = UUID(uuidString: habitID) else { return .result() }; let ctx = WidgetContainer.context
         var d = FetchDescriptor<Habit>(predicate: #Predicate { $0.id == uuid }); d.fetchLimit = 1
         guard let h = try? ctx.fetch(d).first else { return .result() }
         let today = Calendar.current.startOfDay(for: Date())
@@ -103,8 +103,9 @@ struct CheckInProvider: TimelineProvider {
     }
 
     private func loadHabits() -> [WidgetHabitItem] {
-        let ctx = WidgetContainer.makeContext()
-        guard let habits = try? ctx.fetch(FetchDescriptor<Habit>(sortBy: [SortDescriptor(\.sortOrder)])), !habits.isEmpty else { return [] }
+        let ctx = WidgetContainer.context
+        var desc = FetchDescriptor<Habit>(predicate: #Predicate { !$0.isHidden }, sortBy: [SortDescriptor(\.sortOrder)])
+        guard let habits = try? ctx.fetch(desc), !habits.isEmpty else { return [] }
         let today = Calendar.current.startOfDay(for: Date())
         return habits.map { WidgetHabitItem(id: $0.id.uuidString, name: $0.name, isCompleted: $0.isCompleted(for: today), isTimerEnabled: $0.enableTimer, isTimerRunning: $0.hasRunningTimer(), isCountType: $0.type == .count, currentCount: $0.checkInCount(for: today), dailyTarget: $0.dailyTarget) }
     }
@@ -154,14 +155,14 @@ struct NormalCardContent: View {
                 if habit.isCompleted {
                     Text("✓").font(.system(size: 22, weight: .bold)).foregroundColor(.white)
                 } else if habit.isCountType {
-                    Text("\(habit.currentCount)/\(habit.dailyTarget)").font(.system(size: 16, weight: .bold)).foregroundColor(Color(hex: "#888888"))
+                    Text("\(habit.currentCount)/\(habit.dailyTarget)").font(.system(size: 16, weight: .bold)).foregroundColor(Color.taskIncompleteText)
                 } else {
                     Circle().stroke(Color(hex: "#999999"), lineWidth: 2.5).frame(width: 16, height: 16)
                 }
-                Text(habit.name).font(.system(size: 12, weight: .medium)).foregroundColor(habit.isCompleted ? .white : Color(hex: "#555555")).lineLimit(1)
+                Text(habit.name).font(.system(size: 12, weight: .medium)).foregroundColor(habit.isCompleted ? .white : Color.widgetIncompleteText).lineLimit(1)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity).aspectRatio(1.0, contentMode: .fit)
-            .background(RoundedRectangle(cornerRadius: 16).fill(habit.isCompleted ? Color(hex: "#6B6B6B") : Color(hex: "#F5F5F5")))
+            .background(RoundedRectangle(cornerRadius: 16).fill(habit.isCompleted ? Color.widgetComplete : Color.widgetIncomplete))
         }
         .buttonStyle(.plain)
     }
@@ -179,7 +180,7 @@ struct TimerCardContent: View {
                     Text(habit.name).font(.system(size: 12, weight: .medium)).foregroundColor(.white).lineLimit(1)
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity).aspectRatio(1.0, contentMode: .fit)
-                .background(RoundedRectangle(cornerRadius: 16).fill(Color(hex: "#6B6B6B")))
+                .background(RoundedRectangle(cornerRadius: 16).fill(Color.widgetComplete))
             }
             .buttonStyle(.plain)
         } else if habit.isTimerRunning {
@@ -197,11 +198,11 @@ struct TimerCardContent: View {
             // Timer not started: timer icon
             Button(intent: StartTimerIntent(habitID: habit.id)) {
                 VStack(spacing: 6) {
-                    Image(systemName: "timer").font(.system(size: 18)).foregroundColor(Color(hex: "#888888"))
-                    Text(habit.name).font(.system(size: 12, weight: .medium)).foregroundColor(Color(hex: "#555555")).lineLimit(1)
+                    Image(systemName: "timer").font(.system(size: 18)).foregroundColor(Color.taskIncompleteText)
+                    Text(habit.name).font(.system(size: 12, weight: .medium)).foregroundColor(Color.widgetIncompleteText).lineLimit(1)
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity).aspectRatio(1.0, contentMode: .fit)
-                .background(RoundedRectangle(cornerRadius: 16).fill(Color(hex: "#F5F5F5")))
+                .background(RoundedRectangle(cornerRadius: 16).fill(Color.widgetIncomplete))
             }
             .buttonStyle(.plain)
         }

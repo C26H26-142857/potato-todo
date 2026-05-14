@@ -2,7 +2,7 @@ import SwiftUI
 import SwiftData
 
 struct StatsView: View {
-    @Query(sort: \Habit.sortOrder) private var habits: [Habit]
+    @Query(filter: #Predicate<Habit> { !$0.isHidden }, sort: \Habit.sortOrder) private var habits: [Habit]
     @State private var selectedScope: Scope = .week
 
     enum Scope: String, CaseIterable {
@@ -79,7 +79,7 @@ struct StatsView: View {
             }
         }
         .padding(2)
-        .background(RoundedRectangle(cornerRadius: 8).fill(Color(hex: "#E8E8E8")))
+        .background(RoundedRectangle(cornerRadius: 8).fill(Color.scopePickerBg))
     }
 
     private var completionRate: Double {

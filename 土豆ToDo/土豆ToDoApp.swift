@@ -8,9 +8,8 @@ struct PotatoTodoApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView(selectedDate: $selectedDate)
-                .onAppear {
-                    seedIfNeeded()
-                }
+                .onAppear { seedIfNeeded() }
+                .preferredColorScheme(.light)
         }
         .modelContainer(AppConfig.sharedContainer)
     }

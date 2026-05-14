@@ -1,0 +1,67 @@
+{
+  "identifier" : "9F7B8C12",
+  "nonRenewingSubscriptions" : [],
+  "products" : [
+    {
+      "displayName" : "土豆ToDo Pro 月付",
+      "family" : "土豆ToDo Pro",
+      "productID" : "com.potato.todo.pro",
+      "referenceName" : "土豆ToDo Pro Monthly",
+      "type" : "autoRenewable",
+      "subscriptionGroupID" : "9A8B7C",
+      "subscriptions" : [
+        {
+          "adamIDS" : [],
+          "displayPrice" : "3.00",
+          "family" : "土豆ToDo Pro",
+          "groupNumber" : 1,
+          "introductoryOffer" : {
+            "displayPrice" : "0.00",
+            "internalID" : "INTRO1",
+            "numberOfPeriods" : 1,
+            "offerMode" : "freeTrial",
+            "subscriptionPeriod" : "P2W"
+          },
+          "productID" : "com.potato.todo.pro",
+          "recurringSubscriptionPeriod" : "P1M"
+        }
+      ]
+    },
+    {
+      "displayName" : "土豆ToDo Pro 终身",
+      "family" : "土豆ToDo Pro",
+      "productID" : "com.potato.todo.pro.lifetime",
+      "referenceName" : "土豆ToDo Pro Lifetime",
+      "type" : "nonConsumable",
+      "price" : "30.00"
+    }
+  ],
+  "settings" : {
+    "_applicationInternalID" : "9F7B8C12",
+    "_developerTeamID" : "",
+    "_failTransactionsEnabled" : false,
+    "_lastSynchronizedDate" : 0,
+    "_locale" : "zh_CN",
+    "_timeRate" : 1
+  },
+  "subscriptionGroups" : [
+    {
+      "id" : "9A8B7C",
+      "localizedDisplayName" : "土豆ToDo Pro",
+      "name" : "土豆ToDo Pro",
+      "subscriptions" : [
+        {
+          "adAMIDs" : [],
+          "displayName" : "土豆ToDo Pro 月付",
+          "family" : "土豆ToDo Pro",
+          "groupNumber" : 1,
+          "productID" : "com.potato.todo.pro"
+        }
+      ]
+    }
+  ],
+  "version" : {
+    "major" : 3,
+    "minor" : 0
+  }
+}

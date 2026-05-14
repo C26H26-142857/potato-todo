@@ -2,7 +2,7 @@ import SwiftUI
 import SwiftData
 
 struct CalendarView: View {
-    @Query(sort: \Habit.sortOrder) private var habits: [Habit]
+    @Query(filter: #Predicate<Habit> { !$0.isHidden }, sort: \Habit.sortOrder) private var habits: [Habit]
     @State private var currentMonth: Date = Date()
     @State private var selectedDate: Date?
     @State private var showDetail = false

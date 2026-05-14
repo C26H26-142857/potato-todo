@@ -11,6 +11,7 @@ final class Habit {
     var dailyTarget: Int
     var countInStats: Bool
     var enableTimer: Bool
+    var isHidden: Bool
     var createdAt: Date
     var sortOrder: Int
 
@@ -45,6 +46,7 @@ final class Habit {
         self.dailyTarget = dailyTarget
         self.countInStats = true
         self.enableTimer = enableTimer
+        self.isHidden = false
         self.createdAt = Date()
         self.sortOrder = sortOrder
     }

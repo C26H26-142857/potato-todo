@@ -6,6 +6,7 @@ struct HabitEditView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
 
+    let store = StoreManager.shared
     @State private var name: String = ""
     @State private var selectedSymbol: String = "star.fill"
     @State private var selectedType: HabitType = .single
@@ -13,8 +14,9 @@ struct HabitEditView: View {
     @State private var countInStats: Bool = true
     @State private var enableTimer: Bool = false
     @State private var showDeleteAlert = false
+    @State private var showPaywall = false
 
-    @Query(sort: \Habit.sortOrder) private var existingHabits: [Habit]
+    @Query(filter: #Predicate<Habit> { !$0.isHidden }, sort: \Habit.sortOrder) private var existingHabits: [Habit]
 
     private let commonSymbols = [
         "drop.fill", "flame.fill", "book.fill", "figure.run",
@@ -99,6 +101,9 @@ struct HabitEditView: View {
             }
             .navigationTitle(habit == nil ? "新建习惯" : "编辑习惯")
             .navigationBarTitleDisplayMode(.inline)
+            .sheet(isPresented: $showPaywall) {
+                PaywallView()
+            }
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("取消") { dismiss() }
@@ -137,6 +142,30 @@ struct HabitEditView: View {
     private func save() {
         let trimmedName = name.trimmingCharacters(in: .whitespaces)
         guard !trimmedName.isEmpty else { return }
+
+        // Check limits for new habits
+        if habit == nil && !store.isSubscribed {
+            let habitCount = existingHabits.count
+            let timerCount = existingHabits.filter { $0.enableTimer }.count
+
+            if habitCount >= 10 {
+                store.paywallReason = .habitsLimit
+                showPaywall = true
+                return
+            }
+            if enableTimer && timerCount >= 3 {
+                store.paywallReason = .timerLimit
+                showPaywall = true
+                return
+            }
+        } else if let existing = habit, !store.isSubscribed, enableTimer, !existing.enableTimer {
+            let timerCount = existingHabits.filter { $0.enableTimer }.count
+            if timerCount >= 3 {
+                store.paywallReason = .timerLimit
+                showPaywall = true
+                return
+            }
+        }
 
         if let habit = habit {
             habit.name = trimmedName

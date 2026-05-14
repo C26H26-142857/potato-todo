@@ -41,7 +41,7 @@ struct CountdownProvider: TimelineProvider {
     }
 
     private func loadEvents() -> [WidgetCountdownEvent] {
-        let ctx = WidgetContainer.makeContext()
+        let ctx = WidgetContainer.context
         let descriptor = FetchDescriptor<CountdownEvent>(sortBy: [SortDescriptor(\.targetDate)])
         guard let events = try? ctx.fetch(descriptor), !events.isEmpty else { return [] }
         let today = Calendar.current.startOfDay(for: Date())
@@ -65,7 +65,7 @@ struct CountdownWidgetView: View {
         VStack(alignment: .leading, spacing: 0) {
             Text("土豆ToDo · 未来已来")
                 .font(.system(size: 13, weight: .bold))
-                .foregroundColor(Color(hex: "#333333"))
+                .foregroundColor(Color.textPrimary)
                 .padding(.bottom, 8)
 
             ForEach(Array(display.enumerated()), id: \.offset) { index, event in
@@ -75,26 +75,26 @@ struct CountdownWidgetView: View {
                             .font(.system(size: 14, weight: .bold))
                         Text(formattedDate(event.targetDate))
                             .font(.system(size: 11))
-                            .foregroundColor(.gray)
+                            .foregroundColor(.widgetLabel)
                     }
                     Spacer()
                     HStack(alignment: .firstTextBaseline, spacing: 2) {
-                        Text(event.isPast ? "已过去" : "还剩").font(.system(size: 10)).foregroundColor(.gray)
+                        Text(event.isPast ? "已过去" : "还剩").font(.system(size: 10)).foregroundColor(.widgetLabel)
                         Text("\(event.displayDays)").font(.system(size: 30, weight: .bold))
                             .foregroundColor(event.isPast ? Color(hex: "#CCCCCC") : Color(hex: "#FFD60A"))
-                        Text("天").font(.system(size: 10)).foregroundColor(.gray)
+                        Text("天").font(.system(size: 10)).foregroundColor(.widgetLabel)
                     }
                 }
                 if index < display.count - 1 { Divider().padding(.vertical, 10) }
             }
 
             if overflow > 0 {
-                Text("+\(overflow) 个更多").font(.system(size: 11)).foregroundColor(.gray).padding(.top, 8)
+                Text("+\(overflow) 个更多").font(.system(size: 11)).foregroundColor(.widgetLabel).padding(.top, 8)
             }
         }
         .padding(12)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-        .background(Color.white)
+        .background(Color.cardBackground)
     }
 
     private func formattedDate(_ date: Date) -> String {

@@ -2,7 +2,7 @@ import SwiftUI
 import SwiftData
 
 struct TaskGridView: View {
-    @Query(sort: \Habit.sortOrder) private var habits: [Habit]
+    @Query(filter: #Predicate<Habit> { !$0.isHidden }, sort: \Habit.sortOrder) private var habits: [Habit]
     let selectedDate: Date
     @State private var timerManager = TimerManager.shared
 
@@ -82,10 +82,9 @@ struct TaskButton: View {
         )
         .overlay(
             RoundedRectangle(cornerRadius: 20)
-                .strokeBorder(isThisTimerRunning ? Color(hex: "#FFD60A") : .clear, lineWidth: 2)
+                .strokeBorder(isThisTimerRunning ? Color(hex: "#FFD60A") : .clear, lineWidth: 3)
         )
         .animation(.spring(response: 0.3, dampingFraction: 0.6), value: isDone)
-        .animation(.easeInOut(duration: 1).repeatForever(autoreverses: true), value: isThisTimerRunning)
     }
 
     private func formatDuration(_ duration: TimeInterval) -> String {

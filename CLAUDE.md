@@ -1,93 +1,52 @@
-# 土豆ToDo - 项目指引
+# 土豆ToDo — 习惯打卡 iPhone App
 
-习惯打卡 iPhone App。SwiftUI + SwiftData，iOS 18+，纯 Apple 生态。
+**WHAT:** 每日习惯打卡工具。4 Tab（今日/日历/统计/设置）+ 3 小组件 + 土豆钟计时。
 
-## 标准文件路径
+**WHY SwiftUI + SwiftData:** 纯 Apple 生态，零外部依赖，iOS 18+ 能用最新 API。
+**WHY 本地存储:** 无 iCloud 同步需求，App Groups 共享小组件数据。
+**WHY 浅色锁定:** 温暖土豆品牌色系在浅色下最佳，小组件跟随系统深色。
 
-| 文件 | 路径 | 用途 |
-|------|------|------|
-| 功能需求 | `docs/requirements.md` | 全部功能需求清单 |
-| 技术规格 | `docs/tech-specs.md` | 数据模型、架构、技术选型 |
-| 设计规范 | `docs/design-specs.md` | 色彩、字体、圆角、组件规格 |
-| 实施步骤 | `docs/implementation-steps.md` | 分步执行计划 |
-| 设计文档 | `docs/superpowers/specs/2026-05-13-habit-tracker-design.md` | 完整设计规格 |
-| 开发日志 | `dev-logs/` | 每日开发记录 |
+## 文档索引
 
-## 工作约定
+| 文档 | 何时读 |
+|------|--------|
+| `docs/requirements.md` | 新功能前了解全貌 |
+| `docs/tech-specs.md` | 改数据模型/架构 |
+| `docs/design-specs.md` | 改 UI/颜色/字体 |
+| `docs/implementation-steps.md` | 查看当前进度 |
 
-### 开发前
-1. 阅读 `docs/requirements.md` 了解功能全貌
-2. 阅读 `docs/tech-specs.md` 了解技术约束
-3. 阅读 `docs/design-specs.md` 了解视觉规范
-4. 检查 `docs/implementation-steps.md` 当前进度
-
-### 开发后
-1. 更新 `dev-logs/YYYY-MM-DD.md` 记录当天完成和待办
-2. 更新 `docs/implementation-steps.md` 勾选已完成项
-3. 如有设计/需求变更，同步更新对应 docs 文件
-
-### 每日日志
-- 每天首次工作时，在 `dev-logs/` 创建当天日期 `.md` 文件
-- 模板：已完成 + 待办清单
-- 会话结束时更新待办状态
-
-## 关键约束
-- 无外部依赖，纯 Apple 生态
-- App Groups 数据共享：`group.com.potato.todo`
-- 主色调 #FFD60A，深色模式支持
-- 计数型习惯显示进度（已做/目标）
-- 土豆钟与计数型互斥
-
-## 项目架构
+## 架构速览
 
 ```
-土豆ToDo/
-├── 土豆ToDo.xcodeproj              # Xcode 项目
-├── CLAUDE.md                       # 本文件
-├── docs/                           # 标准文档
-├── dev-logs/                       # 每日开发日志
-├── 土豆ToDo/                       # 主 App 源码
-│   ├── Models/                     # Habit, CheckIn, CountdownEvent, TimerSession
-│   ├── Enums/                      # HabitColor, HabitType
-│   ├── Utilities/                  # AppConfig, ColorConstants, TimerManager, etc.
-│   └── Views/                      # Today, Calendar, Stats, Settings
-└── 土豆ToDoWidget/                 # 小组件
-    ├── CheckInWidget.swift          # 打卡小组件（交互 + 土豆钟）
-    ├── CalendarWidget.swift         # 日历小组件（5天日期条）
-    ├── CountdownWidget.swift        # 倒计时小组件
-    └── WidgetContainer.swift        # 小组件数据容器
+土豆ToDo/                              土豆ToDoWidget/
+├── Models/    Habit, CheckIn,         ├── CheckInWidget   # 打卡（含土豆钟）
+│              CountdownEvent,         ├── CalendarWidget  # 5天日期条
+│              TimerSession            ├── CountdownWidget # 倒计时列表
+├── Enums/     HabitColor, HabitType   └── WidgetContainer # 数据容器
+├── Utilities/ AppConfig, ColorConstants,
+│              TimerManager, NotificationManager...
+└── Views/     Today, Calendar, Stats, Settings
 ```
 
-## 交付后维护
+## 工作原则
 
-### Git 版本管理
-- 每次改完一个功能就 commit，消息写清楚做了什么
-- 大改动前先开分支：`git checkout -b feature/xxx`
-- 不要在 main 分支上直接改未经测试的代码
+**开发前:** 扫一眼 `docs/implementation-steps.md` 知道当前状态。不确定功能细节时读对应的 docs 文件。
 
-### 文档更新
-- 新增功能 → 更新 `docs/requirements.md`
-- 改了数据模型 → 更新 `docs/tech-specs.md`
-- 改了 UI → 更新 `docs/design-specs.md`
-- 完成一个阶段 → 更新 `docs/implementation-steps.md` + `dev-logs/`
+**开发中:** 保持数据模型在应用、小组件两个 target 同步（改了 Model 就 copy 到 Widget 目录）。颜色用 `ColorConstants` 里的常量，别写死 hex。
 
-### 数据迁移
-- `Habit` 等 Model 加了新字段 → 必须删 App 重装
-- 上线前需要做 SwiftData 版本迁移（`SchemaMigrationPlan`）
-- 参考：developer.apple.com → SwiftData → Schema Migration
+**开发后:** 更新 `dev-logs/YYYY-MM-DD.md`，勾选 `docs/implementation-steps.md` 完成项。
 
-### 真机测试
-- 模拟器通过后，连 iPhone 真机跑一次
-- 测试小组件在真机桌面的交互
-- 测试通知推送
+## 硬约束
 
-### App Store 上线
-- 注册 Apple Developer Program：developer.apple.com
-- Xcode → Signing & Capabilities → 选你的 Team
-- Product → Archive → Distribute App
-- App Store Connect 填元数据（截图、描述、隐私政策）
+- `group.com.potato.todo` — App Groups 共享容器
+- `#FFD60A` — 主色调，别改
+- 土豆钟和计数型互斥
+- 新增 Model 字段 → 删 App 重装（开发期），上线前加 SchemaMigrationPlan
+- pbxproj 损坏 → 新建 Xcode 项目 + 手动加文件（遇到过）
 
-### 常见问题
-- 小组件数据不同步 → 删 App 重装
-- 编译报 model 字段错 → 旧数据库不兼容，删 App 重装
-- pbxproj 损坏 → 新建 Xcode 项目 + 手动加文件（之前遇到过）
+## 常见坑
+
+- 小组件/App 数据不一致 → 删 App 重装
+- 编译报 Model 字段错 → 旧数据库不兼容，删 App 重装
+- 深色模式 → App 锁死浅色 `.preferredColorScheme(.light)`，小组件自动跟系统
+- Widget 不支持 ScrollView，溢出用 `+N 个更多`

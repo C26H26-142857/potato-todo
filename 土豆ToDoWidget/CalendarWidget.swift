@@ -87,12 +87,12 @@ struct CalendarWidgetView: View {
                     RoundedRectangle(cornerRadius: 12)
                         .fill(d.isToday ? Color(hex: "#FFD60A") : Color.clear)
                 )
-                .foregroundColor(d.isToday ? .black : .gray)
+                .foregroundColor(d.isToday ? .black : .widgetLabel)
             }
         }
         .padding(.horizontal, 12)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color(hex: "#F5F5F7"))
+        .background(Color.appBackground)
     }
 }
 
