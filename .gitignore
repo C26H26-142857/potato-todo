@@ -6,3 +6,4 @@ DerivedData/
 *.xcuserstate
 skills-lock.json
 icon-concept*.html
+build/
