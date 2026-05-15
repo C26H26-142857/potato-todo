@@ -12,7 +12,7 @@ struct PaywallView: View {
     var body: some View {
         VStack(spacing: 0) {
             // Header
-            VStack(spacing: 16) {
+            VStack(spacing: 12) {
                 HStack {
                     Spacer()
                     Button(action: { dismiss() }) {
@@ -23,52 +23,33 @@ struct PaywallView: View {
                 }
 
                 Image(systemName: "crown.fill")
-                    .font(.system(size: 48))
+                    .font(.system(size: 42))
                     .foregroundColor(.brand)
 
                 Text("土豆ToDo Pro")
-                    .font(.system(size: 28, weight: .bold))
+                    .font(.system(size: 26, weight: .bold))
 
                 Text(store.paywallReason.rawValue)
-                    .font(.system(size: 15))
+                    .font(.system(size: 14))
                     .foregroundColor(.gray)
             }
             .padding(.horizontal, 20)
-            .padding(.bottom, 8)
+            .padding(.bottom, 6)
 
             // Features
-            VStack(alignment: .leading, spacing: 10) {
+            VStack(alignment: .leading, spacing: 8) {
                 FeatureRow(icon: "infinity", text: "无限习惯打卡")
                 FeatureRow(icon: "timer", text: "无限土豆钟计时")
             }
             .padding(.horizontal, 44)
-            .padding(.bottom, 20)
+            .padding(.bottom, 16)
 
             // Purchase options
-            VStack(spacing: 10) {
-                // Trial
-                VStack(spacing: 6) {
-                    Button(action: { Task { await store.purchaseMonthly() } }) {
-                        Text("免费试用 14 天")
-                            .font(.system(size: 17, weight: .semibold))
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 14)
-                    }
-                    .buttonStyle(.plain)
-                    .background(Color.brand)
-                    .foregroundColor(.black)
-                    .clipShape(RoundedRectangle(cornerRadius: 14))
-
-                    Text("14天后 " + price + "/月自动续费，可随时取消")
-                        .font(.system(size: 12))
-                        .foregroundColor(.gray)
-                }
-                .disabled(store.isPurchasing)
-
+            VStack(spacing: 8) {
                 // Monthly
-                VStack(spacing: 6) {
+                VStack(spacing: 4) {
                     Button(action: { Task { await store.purchaseMonthly() } }) {
-                        Text(price + "/月")
+                        Text(store.monthlyHasTrial ? "免费试用 14 天" : (price + "/月"))
                             .font(.system(size: 17, weight: .semibold))
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 14)
@@ -78,14 +59,20 @@ struct PaywallView: View {
                     .foregroundColor(.black)
                     .clipShape(RoundedRectangle(cornerRadius: 14))
 
-                    Text(price + "/月自动续费")
-                        .font(.system(size: 12))
-                        .foregroundColor(.gray)
+                    if store.monthlyHasTrial {
+                        Text("14天后 " + price + "/月自动续费，可随时取消")
+                            .font(.system(size: 12))
+                            .foregroundColor(.gray)
+                    } else {
+                        Text(price + "/月自动续费")
+                            .font(.system(size: 12))
+                            .foregroundColor(.gray)
+                    }
                 }
                 .disabled(store.isPurchasing)
 
                 // Lifetime
-                VStack(spacing: 6) {
+                VStack(spacing: 4) {
                     Button(action: { Task { await store.purchaseLifetime() } }) {
                         Text((store.lifetimeProduct?.displayPrice ?? "¥30") + " 终身会员")
                             .font(.system(size: 17, weight: .semibold))
@@ -110,38 +97,39 @@ struct PaywallView: View {
                 Text(error)
                     .font(.system(size: 13))
                     .foregroundColor(.red)
-                    .padding(.top, 12)
+                    .padding(.top, 10)
                     .padding(.horizontal, 32)
             }
 
-            Spacer()
+            // Restore
+            Button("恢复购买") {
+                Task { await store.restore() }
+            }
+            .font(.system(size: 14))
+            .foregroundColor(.gray)
+            .padding(.top, 14)
 
-            // Bottom
-            VStack(spacing: 12) {
-                Button("恢复购买") {
-                    Task { await store.restore() }
-                }
-                .font(.system(size: 14))
-                .foregroundColor(.gray)
-
+            // Terms
+            VStack(spacing: 4) {
                 Button("继续免费使用") { dismiss() }
                     .font(.system(size: 14))
                     .foregroundColor(.gray)
 
-                VStack(spacing: 4) {
+                HStack(spacing: 12) {
                     Link("隐私政策", destination: URL(string: "https://c26h26-142857.github.io/potato-todo/privacy-policy")!)
                         .font(.system(size: 11))
                     Link("服务条款", destination: URL(string: "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/")!)
                         .font(.system(size: 11))
-                    Text("确认购买即同意以上条款")
-                        .font(.system(size: 11))
-                        .foregroundColor(.gray)
                 }
-                .multilineTextAlignment(.center)
+                Text("确认购买即同意以上条款")
+                    .font(.system(size: 11))
+                    .foregroundColor(.gray)
             }
-            .padding(.bottom, 24)
+            .multilineTextAlignment(.center)
+            .padding(.top, 14)
+            .padding(.bottom, 10)
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .frame(maxWidth: .infinity)
         .background(Color.appBackground)
     }
 }
@@ -153,11 +141,11 @@ struct FeatureRow: View {
     var body: some View {
         HStack(spacing: 12) {
             Image(systemName: icon)
-                .font(.system(size: 18))
+                .font(.system(size: 17))
                 .foregroundColor(.brand)
                 .frame(width: 24)
             Text(text)
-                .font(.system(size: 15))
+                .font(.system(size: 14))
             Spacer()
         }
     }

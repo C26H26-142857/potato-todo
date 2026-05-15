@@ -36,7 +36,7 @@ struct SettingsView: View {
             }
             .background(Color.appBackground)
             .navigationTitle("设置")
-            .sheet(isPresented: $showPaywall) { PaywallView() }
+            .sheet(isPresented: $showPaywall) { PaywallView().presentationDetents([.medium]) }
             .sheet(isPresented: $showFeedback) { FeedbackView() }
             .sheet(isPresented: $showPrivacy) { PrivacyView() }
             #if DEBUG
