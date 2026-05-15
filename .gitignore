@@ -1,4 +1,8 @@
 .superpowers/
 .claude/
+.agents/
 DerivedData/
 .DS_Store
+*.xcuserstate
+skills-lock.json
+icon-concept*.html
