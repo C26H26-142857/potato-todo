@@ -49,7 +49,7 @@ struct PaywallView: View {
                 // Monthly
                 VStack(spacing: 4) {
                     Button(action: { Task { await store.purchaseMonthly() } }) {
-                        Text(store.monthlyHasTrial ? "免费试用 14 天" : (price + "/月"))
+                        Text(price + "/月")
                             .font(.system(size: 17, weight: .semibold))
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 14)
@@ -59,15 +59,9 @@ struct PaywallView: View {
                     .foregroundColor(.black)
                     .clipShape(RoundedRectangle(cornerRadius: 14))
 
-                    if store.monthlyHasTrial {
-                        Text("14天后 " + price + "/月自动续费，可随时取消")
-                            .font(.system(size: 12))
-                            .foregroundColor(.gray)
-                    } else {
-                        Text(price + "/月自动续费")
-                            .font(.system(size: 12))
-                            .foregroundColor(.gray)
-                    }
+                    Text(price + "/月自动续费")
+                        .font(.system(size: 12))
+                        .foregroundColor(.gray)
                 }
                 .disabled(store.isPurchasing)
 
@@ -129,7 +123,7 @@ struct PaywallView: View {
             .padding(.top, 14)
             .padding(.bottom, 10)
         }
-        .frame(maxWidth: .infinity)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color.appBackground)
     }
 }

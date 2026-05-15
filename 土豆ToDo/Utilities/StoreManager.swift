@@ -18,11 +18,6 @@ final class StoreManager {
     var isPurchasing = false
     var purchaseError: String?
 
-    /// Whether the monthly product has an introductory offer (trial) configured in App Store Connect.
-    var monthlyHasTrial: Bool {
-        monthlyProduct?.subscription?.introductoryOffer != nil
-    }
-
     enum PaywallReason: String {
         case habitsLimit = "免费版最多 10 个习惯"
         case timerLimit = "免费版最多 3 个土豆钟"
