@@ -402,10 +402,14 @@ struct SettingsView: View {
             .padding(.bottom, 6)
     }
 
+    private static let dateFormatter: DateFormatter = {
+        let f = DateFormatter()
+        f.dateFormat = "yyyy-MM-dd"
+        return f
+    }()
+
     private func formattedDate(_ date: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy-MM-dd"
-        return formatter.string(from: date)
+        Self.dateFormatter.string(from: date)
     }
 }
 

@@ -11,7 +11,6 @@ struct PaywallView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            // Header
             VStack(spacing: 12) {
                 HStack {
                     Spacer()
@@ -33,7 +32,6 @@ struct PaywallView: View {
             .padding(.horizontal, 20)
             .padding(.bottom, 6)
 
-            // Features
             VStack(alignment: .leading, spacing: 8) {
                 FeatureRow(icon: "infinity", text: "无限习惯打卡")
                 FeatureRow(icon: "timer", text: "无限土豆钟计时")
@@ -41,9 +39,7 @@ struct PaywallView: View {
             .padding(.horizontal, 44)
             .padding(.bottom, 16)
 
-            // Purchase options
             VStack(spacing: 8) {
-                // Monthly
                 VStack(spacing: 4) {
                     Button(action: { Task { await store.purchaseMonthly() } }) {
                         Text(price + "/月")
@@ -62,7 +58,6 @@ struct PaywallView: View {
                 }
                 .disabled(store.isPurchasing)
 
-                // Lifetime
                 VStack(spacing: 4) {
                     Button(action: { Task { await store.purchaseLifetime() } }) {
                         Text((store.lifetimeProduct?.displayPrice ?? "¥30") + " 终身会员")
@@ -83,7 +78,6 @@ struct PaywallView: View {
             }
             .padding(.horizontal, 32)
 
-            // Error
             if let error = store.purchaseError {
                 Text(error)
                     .font(.system(size: 13))
@@ -92,7 +86,6 @@ struct PaywallView: View {
                     .padding(.horizontal, 32)
             }
 
-            // Restore
             Button("恢复购买") {
                 Task { await store.restore() }
             }
@@ -100,7 +93,6 @@ struct PaywallView: View {
             .foregroundColor(.gray)
             .padding(.top, 14)
 
-            // Terms
             VStack(spacing: 4) {
                 Button("继续免费使用") { dismiss() }
                     .font(.system(size: 14))
