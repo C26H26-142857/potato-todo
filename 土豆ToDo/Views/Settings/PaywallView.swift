@@ -29,9 +29,6 @@ struct PaywallView: View {
                 Text("土豆ToDo Pro")
                     .font(.system(size: 26, weight: .bold))
 
-                Text(store.paywallReason.rawValue)
-                    .font(.system(size: 14))
-                    .foregroundColor(.gray)
             }
             .padding(.horizontal, 20)
             .padding(.bottom, 6)
