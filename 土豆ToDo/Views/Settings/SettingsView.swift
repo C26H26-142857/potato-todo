@@ -6,8 +6,8 @@ struct SettingsView: View {
     @Query(sort: \CountdownEvent.targetDate) private var countdowns: [CountdownEvent]
     @Environment(\.modelContext) private var modelContext
 
-    @State private var showHabitEditor = false
-    @State private var showCountdownEditor = false
+    @State private var showNewHabit = false
+    @State private var showNewCountdown = false
     @State private var editingHabit: Habit?
     @State private var editingCountdown: CountdownEvent?
     @AppStorage("reminderTime") private var reminderHour: Int = 8
@@ -44,11 +44,17 @@ struct SettingsView: View {
                 ExpirySelectionView { showExpiryTest = false }
             }
             #endif
-            .sheet(isPresented: $showHabitEditor) {
-                HabitEditView(habit: editingHabit)
+            .sheet(item: $editingHabit) { habit in
+                HabitEditView(habit: habit)
             }
-            .sheet(isPresented: $showCountdownEditor) {
-                CountdownEditView(event: editingCountdown)
+            .sheet(isPresented: $showNewHabit) {
+                HabitEditView(habit: nil)
+            }
+            .sheet(item: $editingCountdown) { event in
+                CountdownEditView(event: event)
+            }
+            .sheet(isPresented: $showNewCountdown) {
+                CountdownEditView(event: nil)
             }
         }
     }
@@ -104,7 +110,6 @@ struct SettingsView: View {
                 ForEach(habits) { habit in
                     Button {
                         editingHabit = habit
-                        showHabitEditor = true
                     } label: {
                         HStack(spacing: 10) {
                             Image(systemName: habit.sfSymbol)
@@ -138,8 +143,7 @@ struct SettingsView: View {
                 }
 
                 Button {
-                    editingHabit = nil
-                    showHabitEditor = true
+                    showNewHabit = true
                 } label: {
                     Text("+ 添加新习惯")
                         .font(.system(size: 13, weight: .semibold))
@@ -163,7 +167,6 @@ struct SettingsView: View {
                 ForEach(countdowns) { event in
                     Button {
                         editingCountdown = event
-                        showCountdownEditor = true
                     } label: {
                         HStack {
                             VStack(alignment: .leading, spacing: 2) {
@@ -190,8 +193,7 @@ struct SettingsView: View {
                 }
 
                 Button {
-                    editingCountdown = nil
-                    showCountdownEditor = true
+                    showNewCountdown = true
                 } label: {
                     Text("+ 添加倒计时")
                         .font(.system(size: 13, weight: .semibold))
