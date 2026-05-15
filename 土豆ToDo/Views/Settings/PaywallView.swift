@@ -46,20 +46,11 @@ struct PaywallView: View {
 
             // Purchase options
             VStack(spacing: 10) {
-                // Trial card — highlighted
+                // Trial
                 Button(action: { Task { await store.purchaseMonthly() } }) {
-                    VStack(spacing: 4) {
-                        HStack(spacing: 8) {
-                            Text("免费试用")
-                                .font(.system(size: 18, weight: .bold))
-                            Text("推荐")
-                                .font(.system(size: 10, weight: .bold))
-                                .foregroundColor(.brand)
-                                .padding(.horizontal, 6)
-                                .padding(.vertical, 2)
-                                .background(Color.black)
-                                .clipShape(RoundedRectangle(cornerRadius: 4))
-                        }
+                    VStack(spacing: 6) {
+                        Text("免费试用 14 天")
+                            .font(.system(size: 17, weight: .semibold))
                         Text("14天后 " + price + "/月自动续费，可随时取消")
                             .font(.system(size: 12))
                     }
@@ -72,44 +63,30 @@ struct PaywallView: View {
                 .clipShape(RoundedRectangle(cornerRadius: 14))
                 .disabled(store.isPurchasing)
 
-                // Monthly direct
+                // Monthly
                 Button(action: { Task { await store.purchaseMonthly() } }) {
-                    HStack {
-                        Text(price + "/月")
-                            .font(.system(size: 17, weight: .semibold))
-                        Spacer()
-                        Text("直接订阅")
-                            .font(.system(size: 13))
-                            .foregroundColor(.gray)
-                    }
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 14)
-                    .padding(.horizontal, 18)
-                    .background(
-                        RoundedRectangle(cornerRadius: 14)
-                            .stroke(Color.brand, lineWidth: 2)
-                    )
+                    Text(price + "/月")
+                        .font(.system(size: 17, weight: .semibold))
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 14)
                 }
+                .buttonStyle(.plain)
+                .background(Color.brand)
+                .foregroundColor(.black)
+                .clipShape(RoundedRectangle(cornerRadius: 14))
                 .disabled(store.isPurchasing)
 
                 // Lifetime
                 Button(action: { Task { await store.purchaseLifetime() } }) {
-                    HStack {
-                        Text((store.lifetimeProduct?.displayPrice ?? "¥30") + " 终身会员")
-                            .font(.system(size: 17, weight: .semibold))
-                        Spacer()
-                        Text("一次购买 · 永久")
-                            .font(.system(size: 12))
-                            .foregroundColor(.gray)
-                    }
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 14)
-                    .padding(.horizontal, 18)
-                    .background(
-                        RoundedRectangle(cornerRadius: 14)
-                            .stroke(Color.brand, lineWidth: 2)
-                    )
+                    Text((store.lifetimeProduct?.displayPrice ?? "¥30") + " 终身会员")
+                        .font(.system(size: 17, weight: .semibold))
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 14)
                 }
+                .buttonStyle(.plain)
+                .background(Color.brand)
+                .foregroundColor(.black)
+                .clipShape(RoundedRectangle(cornerRadius: 14))
                 .disabled(store.isPurchasing)
             }
             .padding(.horizontal, 32)
@@ -123,23 +100,16 @@ struct PaywallView: View {
                     .padding(.horizontal, 32)
             }
 
-            if store.isPurchasing {
-                ProgressView()
-                    .padding(.top, 12)
-            }
-
-            // Restore
-            Button("恢复购买") {
-                Task { await store.restore() }
-            }
-            .font(.system(size: 14))
-            .foregroundColor(.gray)
-            .padding(.top, 16)
-
             Spacer()
 
             // Bottom
-            VStack(spacing: 8) {
+            VStack(spacing: 12) {
+                Button("恢复购买") {
+                    Task { await store.restore() }
+                }
+                .font(.system(size: 14))
+                .foregroundColor(.gray)
+
                 Button("继续免费使用") { dismiss() }
                     .font(.system(size: 14))
                     .foregroundColor(.gray)
@@ -155,7 +125,7 @@ struct PaywallView: View {
                 }
                 .multilineTextAlignment(.center)
             }
-            .padding(.bottom, 20)
+            .padding(.bottom, 24)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color.appBackground)
