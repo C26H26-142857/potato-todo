@@ -71,7 +71,7 @@ struct PaywallView: View {
             // Lifetime option
             VStack(spacing: 6) {
                 Button(action: { Task { await store.purchaseLifetime() } }) {
-                    Text(store.isPurchasing ? "处理中..." : (store.lifetimeProduct?.displayPrice ?? "¥28") + " 终身会员")
+                    Text(store.isPurchasing ? "处理中..." : (store.lifetimeProduct?.displayPrice ?? "¥30") + " 终身会员")
                         .font(.system(size: 17, weight: .semibold))
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 14)
