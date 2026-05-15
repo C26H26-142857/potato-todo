@@ -56,6 +56,12 @@ struct CountdownProvider: TimelineProvider {
 struct CountdownWidgetView: View {
     var entry: CountdownEntry
     @Environment(\.widgetFamily) var family
+    @Environment(\.widgetRenderingMode) private var renderingMode
+
+    private var isAccented: Bool {
+        guard #available(iOS 18.0, *) else { return false }
+        return renderingMode != .fullColor
+    }
 
     var body: some View {
         let maxShow = family == .systemLarge ? 6 : 2
@@ -65,7 +71,7 @@ struct CountdownWidgetView: View {
         VStack(alignment: .leading, spacing: 0) {
             Text("土豆ToDo · 未来已来")
                 .font(.system(size: 13, weight: .bold))
-                .foregroundColor(Color.textPrimary)
+                .foregroundColor(isAccented ? .primary : Color.textPrimary)
                 .padding(.bottom, 8)
 
             ForEach(Array(display.enumerated()), id: \.offset) { index, event in
@@ -75,26 +81,41 @@ struct CountdownWidgetView: View {
                             .font(.system(size: 14, weight: .bold))
                         Text(formattedDate(event.targetDate))
                             .font(.system(size: 11))
-                            .foregroundColor(.widgetLabel)
+                            .foregroundColor(isAccented ? .primary : .widgetLabel)
                     }
                     Spacer()
                     HStack(alignment: .firstTextBaseline, spacing: 2) {
-                        Text(event.isPast ? "已过去" : "还剩").font(.system(size: 10)).foregroundColor(.widgetLabel)
-                        Text("\(event.displayDays)").font(.system(size: 30, weight: .bold))
-                            .foregroundColor(event.isPast ? Color(hex: "#CCCCCC") : Color(hex: "#FFD60A"))
-                        Text("天").font(.system(size: 10)).foregroundColor(.widgetLabel)
+                        Text(event.isPast ? "已过去" : "还剩")
+                            .font(.system(size: 10))
+                            .foregroundColor(isAccented ? .primary : .widgetLabel)
+                        Text("\(event.displayDays)")
+                            .font(.system(size: 30, weight: .bold))
+                            .foregroundColor(event.isPast
+                                             ? (isAccented ? .primary.opacity(0.5) : Color(hex: "#CCCCCC"))
+                                             : (isAccented ? .brand : Color(hex: "#FFD60A")))
+                            .widgetAccentable(!event.isPast)
+                        Text("天")
+                            .font(.system(size: 10))
+                            .foregroundColor(isAccented ? .primary : .widgetLabel)
                     }
                 }
-                if index < display.count - 1 { Divider().padding(.vertical, 10) }
+                if index < display.count - 1 {
+                    Divider()
+                        .padding(.vertical, 10)
+                        .opacity(isAccented ? 0.3 : 1)
+                }
             }
 
             if overflow > 0 {
-                Text("+\(overflow) 个更多").font(.system(size: 11)).foregroundColor(.widgetLabel).padding(.top, 8)
+                Text("+\(overflow) 个更多")
+                    .font(.system(size: 11))
+                    .foregroundColor(isAccented ? .primary : .widgetLabel)
+                    .padding(.top, 8)
             }
         }
         .padding(12)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-        .background(Color.cardBackground)
+        .background(isAccented ? Color.clear : Color.cardBackground)
     }
 
     private func formattedDate(_ date: Date) -> String {

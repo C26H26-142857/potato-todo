@@ -115,6 +115,12 @@ struct CheckInProvider: TimelineProvider {
 struct CheckInWidgetView: View {
     var entry: CheckInEntry
     @Environment(\.widgetFamily) var family
+    @Environment(\.widgetRenderingMode) private var renderingMode
+
+    private var isAccented: Bool {
+        guard #available(iOS 18.0, *) else { return false }
+        return renderingMode != .fullColor
+    }
 
     var body: some View {
         let cfg: (Int, Int) = family == .systemSmall ? (1, 3) : family == .systemLarge ? (4, 16) : (4, 8)
@@ -123,7 +129,8 @@ struct CheckInWidgetView: View {
 
         if display.isEmpty {
             Text("暂无习惯\n打开App添加")
-                .font(.system(size: 12)).multilineTextAlignment(.center).foregroundColor(.gray)
+                .font(.system(size: 12)).multilineTextAlignment(.center)
+                .foregroundColor(isAccented ? .primary : .gray)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
         } else {
             LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 10), count: cfg.0), spacing: 10) {
@@ -148,21 +155,45 @@ struct CheckInCardView: View {
 
 struct NormalCardContent: View {
     let habit: WidgetHabitItem
+    @Environment(\.widgetRenderingMode) private var renderingMode
+
+    private var isAccented: Bool {
+        if #available(iOS 18.0, *) { renderingMode != .fullColor } else { false }
+    }
 
     var body: some View {
         Button(intent: ToggleCheckIntent(habitID: habit.id)) {
             VStack(spacing: 6) {
                 if habit.isCompleted {
-                    Text("✓").font(.system(size: 22, weight: .bold)).foregroundColor(.white)
+                    Text("✓").font(.system(size: 22, weight: .bold))
+                        .foregroundColor(isAccented ? .primary : .white)
+                        .widgetAccentable()
                 } else if habit.isCountType {
-                    Text("\(habit.currentCount)/\(habit.dailyTarget)").font(.system(size: 16, weight: .bold)).foregroundColor(Color.taskIncompleteText)
+                    Text("\(habit.currentCount)/\(habit.dailyTarget)")
+                        .font(.system(size: 16, weight: .bold))
+                        .foregroundColor(isAccented ? .primary : Color.taskIncompleteText)
                 } else {
-                    Circle().stroke(Color(hex: "#999999"), lineWidth: 2.5).frame(width: 16, height: 16)
+                    Circle().stroke(isAccented ? Color.primary : Color(hex: "#999999"), lineWidth: 2.5)
+                        .frame(width: 16, height: 16)
                 }
-                Text(habit.name).font(.system(size: 12, weight: .medium)).foregroundColor(habit.isCompleted ? .white : Color.widgetIncompleteText).lineLimit(1)
+                Text(habit.name).font(.system(size: 12, weight: .medium))
+                    .foregroundColor(habit.isCompleted
+                                     ? (isAccented ? .primary : .white)
+                                     : (isAccented ? .primary : Color.widgetIncompleteText))
+                    .lineLimit(1)
+                    .widgetAccentable(habit.isCompleted)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity).aspectRatio(1.0, contentMode: .fit)
-            .background(RoundedRectangle(cornerRadius: 16).fill(habit.isCompleted ? Color.widgetComplete : Color.widgetIncomplete))
+            .background(
+                RoundedRectangle(cornerRadius: 16)
+                    .fill(habit.isCompleted
+                          ? (isAccented ? Color.white.opacity(0.15) : Color.widgetComplete)
+                          : (isAccented ? Color.clear : Color.widgetIncomplete))
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 16)
+                    .stroke(isAccented && !habit.isCompleted ? Color.primary.opacity(0.2) : Color.clear, lineWidth: 1)
+            )
         }
         .buttonStyle(.plain)
     }
@@ -170,39 +201,74 @@ struct NormalCardContent: View {
 
 struct TimerCardContent: View {
     let habit: WidgetHabitItem
+    @Environment(\.widgetRenderingMode) private var renderingMode
+
+    private var isAccented: Bool {
+        guard #available(iOS 18.0, *) else { return false }
+        return renderingMode != .fullColor
+    }
 
     var body: some View {
         if habit.isCompleted {
-            // Completed timer habit: show ✓ (same as normal completed)
+            // Completed timer habit: show ✓
             Button(intent: ToggleCheckIntent(habitID: habit.id)) {
                 VStack(spacing: 6) {
-                    Text("✓").font(.system(size: 22, weight: .bold)).foregroundColor(.white)
-                    Text(habit.name).font(.system(size: 12, weight: .medium)).foregroundColor(.white).lineLimit(1)
+                    Text("✓").font(.system(size: 22, weight: .bold))
+                        .foregroundColor(isAccented ? .primary : .white)
+                        .widgetAccentable()
+                    Text(habit.name).font(.system(size: 12, weight: .medium))
+                        .foregroundColor(isAccented ? .primary : .white)
+                        .widgetAccentable()
+                        .lineLimit(1)
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity).aspectRatio(1.0, contentMode: .fit)
-                .background(RoundedRectangle(cornerRadius: 16).fill(Color.widgetComplete))
+                .background(
+                    RoundedRectangle(cornerRadius: 16)
+                        .fill(isAccented ? Color.white.opacity(0.15) : Color.widgetComplete)
+                )
             }
             .buttonStyle(.plain)
         } else if habit.isTimerRunning {
             // Timer running: yellow + "todo中"
             Button(intent: StopTimerIntent(habitID: habit.id)) {
                 VStack(spacing: 6) {
-                    Text("todo中").font(.system(size: 13, weight: .bold)).foregroundColor(.black)
-                    Text(habit.name).font(.system(size: 12, weight: .medium)).foregroundColor(.black).lineLimit(1)
+                    Text("todo中").font(.system(size: 13, weight: .bold))
+                        .foregroundColor(isAccented ? .primary : .black)
+                    Text(habit.name).font(.system(size: 12, weight: .medium))
+                        .foregroundColor(isAccented ? .primary : .black)
+                        .lineLimit(1)
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity).aspectRatio(1.0, contentMode: .fit)
-                .background(RoundedRectangle(cornerRadius: 16).fill(Color(hex: "#FFD60A")))
+                .background(
+                    RoundedRectangle(cornerRadius: 16)
+                        .fill(isAccented ? Color.brand.opacity(0.3) : Color(hex: "#FFD60A"))
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: 16)
+                        .stroke(isAccented ? Color.brand : Color.clear, lineWidth: 2)
+                )
+                .widgetAccentable()
             }
             .buttonStyle(.plain)
         } else {
             // Timer not started: timer icon
             Button(intent: StartTimerIntent(habitID: habit.id)) {
                 VStack(spacing: 6) {
-                    Image(systemName: "timer").font(.system(size: 18)).foregroundColor(Color.taskIncompleteText)
-                    Text(habit.name).font(.system(size: 12, weight: .medium)).foregroundColor(Color.widgetIncompleteText).lineLimit(1)
+                    Image(systemName: "timer").font(.system(size: 18))
+                        .foregroundColor(isAccented ? .primary : Color.taskIncompleteText)
+                    Text(habit.name).font(.system(size: 12, weight: .medium))
+                        .foregroundColor(isAccented ? .primary : Color.widgetIncompleteText)
+                        .lineLimit(1)
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity).aspectRatio(1.0, contentMode: .fit)
-                .background(RoundedRectangle(cornerRadius: 16).fill(Color.widgetIncomplete))
+                .background(
+                    RoundedRectangle(cornerRadius: 16)
+                        .fill(isAccented ? Color.clear : Color.widgetIncomplete)
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: 16)
+                        .stroke(isAccented ? Color.primary.opacity(0.2) : Color.clear, lineWidth: 1)
+                )
             }
             .buttonStyle(.plain)
         }

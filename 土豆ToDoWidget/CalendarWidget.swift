@@ -68,6 +68,12 @@ struct CalendarProvider: TimelineProvider {
 // MARK: - View
 struct CalendarWidgetView: View {
     var entry: CalendarEntry
+    @Environment(\.widgetRenderingMode) private var renderingMode
+
+    private var isAccented: Bool {
+        guard #available(iOS 18.0, *) else { return false }
+        return renderingMode != .fullColor
+    }
 
     var body: some View {
         HStack(spacing: 10) {
@@ -85,14 +91,23 @@ struct CalendarWidgetView: View {
                 .padding(.vertical, 10)
                 .background(
                     RoundedRectangle(cornerRadius: 12)
-                        .fill(d.isToday ? Color(hex: "#FFD60A") : Color.clear)
+                        .fill(d.isToday
+                              ? (isAccented ? Color.brand.opacity(0.3) : Color(hex: "#FFD60A"))
+                              : Color.clear)
                 )
-                .foregroundColor(d.isToday ? .black : .widgetLabel)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke(d.isToday && isAccented ? Color.brand : Color.clear, lineWidth: 1.5)
+                )
+                .foregroundColor(d.isToday
+                                 ? (isAccented ? .primary : .black)
+                                 : (isAccented ? .primary : .widgetLabel))
+                .widgetAccentable(d.isToday)
             }
         }
         .padding(.horizontal, 12)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color.appBackground)
+        .background(isAccented ? Color.clear : Color.appBackground)
     }
 }
 
