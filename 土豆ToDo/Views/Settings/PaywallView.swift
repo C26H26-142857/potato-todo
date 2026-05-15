@@ -47,46 +47,60 @@ struct PaywallView: View {
             // Purchase options
             VStack(spacing: 10) {
                 // Trial
-                Button(action: { Task { await store.purchaseMonthly() } }) {
-                    VStack(spacing: 6) {
+                VStack(spacing: 6) {
+                    Button(action: { Task { await store.purchaseMonthly() } }) {
                         Text("免费试用 14 天")
                             .font(.system(size: 17, weight: .semibold))
-                        Text("14天后 " + price + "/月自动续费，可随时取消")
-                            .font(.system(size: 12))
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 14)
                     }
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 14)
+                    .buttonStyle(.plain)
+                    .background(Color.brand)
+                    .foregroundColor(.black)
+                    .clipShape(RoundedRectangle(cornerRadius: 14))
+
+                    Text("14天后 " + price + "/月自动续费，可随时取消")
+                        .font(.system(size: 12))
+                        .foregroundColor(.gray)
                 }
-                .buttonStyle(.plain)
-                .background(Color.brand)
-                .foregroundColor(.black)
-                .clipShape(RoundedRectangle(cornerRadius: 14))
                 .disabled(store.isPurchasing)
 
                 // Monthly
-                Button(action: { Task { await store.purchaseMonthly() } }) {
-                    Text(price + "/月")
-                        .font(.system(size: 17, weight: .semibold))
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 14)
+                VStack(spacing: 6) {
+                    Button(action: { Task { await store.purchaseMonthly() } }) {
+                        Text(price + "/月")
+                            .font(.system(size: 17, weight: .semibold))
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 14)
+                    }
+                    .buttonStyle(.plain)
+                    .background(Color.brand)
+                    .foregroundColor(.black)
+                    .clipShape(RoundedRectangle(cornerRadius: 14))
+
+                    Text(price + "/月自动续费")
+                        .font(.system(size: 12))
+                        .foregroundColor(.gray)
                 }
-                .buttonStyle(.plain)
-                .background(Color.brand)
-                .foregroundColor(.black)
-                .clipShape(RoundedRectangle(cornerRadius: 14))
                 .disabled(store.isPurchasing)
 
                 // Lifetime
-                Button(action: { Task { await store.purchaseLifetime() } }) {
-                    Text((store.lifetimeProduct?.displayPrice ?? "¥30") + " 终身会员")
-                        .font(.system(size: 17, weight: .semibold))
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 14)
+                VStack(spacing: 6) {
+                    Button(action: { Task { await store.purchaseLifetime() } }) {
+                        Text((store.lifetimeProduct?.displayPrice ?? "¥30") + " 终身会员")
+                            .font(.system(size: 17, weight: .semibold))
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 14)
+                    }
+                    .buttonStyle(.plain)
+                    .background(Color.brand)
+                    .foregroundColor(.black)
+                    .clipShape(RoundedRectangle(cornerRadius: 14))
+
+                    Text("一次购买，永久使用")
+                        .font(.system(size: 12))
+                        .foregroundColor(.gray)
                 }
-                .buttonStyle(.plain)
-                .background(Color.brand)
-                .foregroundColor(.black)
-                .clipShape(RoundedRectangle(cornerRadius: 14))
                 .disabled(store.isPurchasing)
             }
             .padding(.horizontal, 32)
