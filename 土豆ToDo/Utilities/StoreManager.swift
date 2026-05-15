@@ -13,11 +13,15 @@ final class StoreManager {
     var monthlyProduct: Product?
     var lifetimeProduct: Product?
     var isSubscribed = false
-    var trialStartDate: Date?
     var showPaywall = false
     var paywallReason: PaywallReason = .habitsLimit
     var isPurchasing = false
     var purchaseError: String?
+
+    /// Whether the monthly product has an introductory offer (trial) configured in App Store Connect.
+    var monthlyHasTrial: Bool {
+        monthlyProduct?.subscription?.introductoryOffer != nil
+    }
 
     enum PaywallReason: String {
         case habitsLimit = "免费版最多 10 个习惯"
@@ -30,7 +34,6 @@ final class StoreManager {
         updatesTask = Task { await observeTransactions() }
         Task { await loadProduct() }
         Task { await checkSubscription() }
-        loadTrialDate()
     }
 
     deinit { updatesTask?.cancel() }
@@ -63,10 +66,6 @@ final class StoreManager {
                 case .verified(let txn):
                     await txn.finish()
                     isSubscribed = true
-                    if product.id == monthlyID {
-                        trialStartDate = Date()
-                        saveTrialDate()
-                    }
                     showPaywall = false
                 case .unverified:
                     purchaseError = "购买验证失败，请重试"
@@ -97,20 +96,14 @@ final class StoreManager {
         var active = false
         for await result in Transaction.currentEntitlements {
             guard case .verified(let txn) = result else { continue }
-            // Lifetime: always active
             if txn.productID == lifetimeID {
                 active = true
                 break
             }
-            // Monthly: check expiration
             if txn.productID == monthlyID,
                let exp = txn.expirationDate,
                exp > Date() {
                 active = true
-                if trialStartDate == nil {
-                    trialStartDate = txn.purchaseDate
-                    saveTrialDate()
-                }
             }
         }
         isSubscribed = active
@@ -124,23 +117,5 @@ final class StoreManager {
             }
             await txn.finish()
         }
-    }
-
-    // MARK: - Trial
-    var trialDaysRemaining: Int {
-        guard let start = trialStartDate else { return 14 }
-        let elapsed = Calendar.current.dateComponents([.day], from: start, to: Date()).day ?? 0
-        return max(0, 14 - elapsed)
-    }
-
-    var trialIsActive: Bool { !isSubscribed && trialDaysRemaining > 0 }
-    var trialEndingSoon: Bool { trialIsActive && trialDaysRemaining == 1 }
-
-    private func loadTrialDate() {
-        trialStartDate = UserDefaults.standard.object(forKey: "trialStartDate") as? Date
-    }
-
-    private func saveTrialDate() {
-        UserDefaults.standard.set(trialStartDate, forKey: "trialStartDate")
     }
 }

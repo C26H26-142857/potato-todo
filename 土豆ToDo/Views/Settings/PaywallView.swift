@@ -1,14 +1,25 @@
 import SwiftUI
-import StoreKit
 
 struct PaywallView: View {
     @Environment(\.dismiss) private var dismiss
     let store = StoreManager.shared
 
+    private var monthlyButtonText: String {
+        if store.isPurchasing { return "处理中..." }
+        if store.monthlyHasTrial { return "免费试用 14 天" }
+        return (store.monthlyProduct?.displayPrice ?? "¥3.00") + "/月"
+    }
+
+    private var monthlySubtitle: String {
+        if store.monthlyHasTrial {
+            return "14天后 " + (store.monthlyProduct?.displayPrice ?? "¥3.00") + "/月自动续费"
+        }
+        return (store.monthlyProduct?.displayPrice ?? "¥3.00") + "/月自动续费"
+    }
+
     var body: some View {
         ScrollView {
         VStack(spacing: 24) {
-            // Close button
             HStack {
                 Spacer()
                 Button(action: { dismiss() }) {
@@ -20,12 +31,10 @@ struct PaywallView: View {
             .padding(.horizontal, 20)
             .padding(.top, 20)
 
-            // Icon
             Image(systemName: "crown.fill")
                 .font(.system(size: 48))
                 .foregroundColor(.brand)
 
-            // Title
             Text("土豆ToDo Pro")
                 .font(.system(size: 28, weight: .bold))
 
@@ -33,19 +42,17 @@ struct PaywallView: View {
                 .font(.system(size: 15))
                 .foregroundColor(.gray)
 
-            // Features
             VStack(alignment: .leading, spacing: 14) {
                 FeatureRow(icon: "infinity", text: "无限习惯打卡")
                 FeatureRow(icon: "timer", text: "无限土豆钟计时")
                 FeatureRow(icon: "gift", text: "14 天免费试用")
-                FeatureRow(icon: "bell.badge", text: "试用结束前提醒")
             }
             .padding(.horizontal, 32)
 
             // Monthly option
             VStack(spacing: 6) {
                 Button(action: { Task { await store.purchaseMonthly() } }) {
-                    Text(store.isPurchasing ? "处理中..." : "免费试用 14 天")
+                    Text(monthlyButtonText)
                         .font(.system(size: 17, weight: .semibold))
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 14)
@@ -55,7 +62,7 @@ struct PaywallView: View {
                 }
                 .disabled(store.isPurchasing)
 
-                Text("14天后 " + (store.monthlyProduct?.displayPrice ?? "¥3.00") + "/月自动续费")
+                Text(monthlySubtitle)
                     .font(.system(size: 12))
                     .foregroundColor(.gray)
             }
@@ -64,7 +71,7 @@ struct PaywallView: View {
             // Lifetime option
             VStack(spacing: 6) {
                 Button(action: { Task { await store.purchaseLifetime() } }) {
-                    Text(store.isPurchasing ? "处理中..." : (store.lifetimeProduct?.displayPrice ?? "¥30") + " 终身会员")
+                    Text(store.isPurchasing ? "处理中..." : (store.lifetimeProduct?.displayPrice ?? "¥28") + " 终身会员")
                         .font(.system(size: 17, weight: .semibold))
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 14)
@@ -101,13 +108,19 @@ struct PaywallView: View {
                 .foregroundColor(.gray)
                 .padding(.top, 8)
 
-            // Terms
-            Text("确认购买即同意服务条款及隐私政策。订阅自动续费，可随时取消。")
-                .font(.system(size: 11))
-                .foregroundColor(.gray)
-                .multilineTextAlignment(.center)
-                .padding(.horizontal, 32)
-                .padding(.bottom, 30)
+            // Terms & Privacy
+            VStack(spacing: 4) {
+                Link("隐私政策", destination: URL(string: "https://c26h26-142857.github.io/potato-todo/privacy-policy")!)
+                    .font(.system(size: 11))
+                Link("服务条款", destination: URL(string: "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/")!)
+                    .font(.system(size: 11))
+                Text("确认购买即同意以上条款。订阅自动续费，可随时取消。")
+                    .font(.system(size: 11))
+                    .foregroundColor(.gray)
+            }
+            .multilineTextAlignment(.center)
+            .padding(.horizontal, 32)
+            .padding(.bottom, 30)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color.appBackground)
