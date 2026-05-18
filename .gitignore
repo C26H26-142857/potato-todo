@@ -7,3 +7,6 @@ DerivedData/
 skills-lock.json
 icon-concept*.html
 build/
+.app-store-secret
+exportOptions.plist
+*.py
