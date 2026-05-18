@@ -20,6 +20,7 @@ struct CountdownEditView: View {
                 Section("目标日期") {
                     DatePicker("选择日期", selection: $targetDate, displayedComponents: .date)
                         .datePickerStyle(.graphical)
+                        .environment(\.locale, Locale(identifier: "zh_CN"))
                 }
             }
             .navigationTitle(event == nil ? "新建倒计时" : "编辑倒计时")
