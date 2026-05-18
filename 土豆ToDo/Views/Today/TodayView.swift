@@ -2,6 +2,7 @@ import SwiftUI
 
 struct TodayView: View {
     @Binding var selectedDate: Date
+    @State private var selectedCountdown: CountdownEvent?
 
     var body: some View {
         ScrollView {
@@ -12,11 +13,14 @@ struct TodayView: View {
                 TaskGridView(selectedDate: selectedDate)
                     .padding(.horizontal, 16)
 
-                CountdownCard()
+                CountdownCard(onTap: { selectedCountdown = $0 })
                     .padding(.horizontal, 16)
             }
             .padding(.bottom, 20)
         }
         .background(Color.appBackground)
+        .sheet(item: $selectedCountdown) { event in
+            CountdownEditView(event: event)
+        }
     }
 }

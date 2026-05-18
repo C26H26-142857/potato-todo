@@ -3,6 +3,7 @@ import SwiftData
 
 struct CountdownCard: View {
     @Query(sort: \CountdownEvent.targetDate) private var events: [CountdownEvent]
+    var onTap: ((CountdownEvent) -> Void)? = nil
 
     var body: some View {
         if !events.isEmpty {
@@ -14,6 +15,8 @@ struct CountdownCard: View {
 
                 ForEach(Array(events.enumerated()), id: \.element.id) { index, event in
                     CountdownRow(event: event)
+                        .contentShape(Rectangle())
+                        .onTapGesture { onTap?(event) }
                     if index < events.count - 1 {
                         Divider()
                             .padding(.vertical, 12)
