@@ -86,8 +86,13 @@ struct PaywallView: View {
                     .padding(.horizontal, 32)
             }
 
-            Button("恢复购买") {
-                Task { await store.restore() }
+            HStack(spacing: 20) {
+                Button("恢复购买") {
+                    Task { await store.restore() }
+                }
+                Button("兑换代码") {
+                    Task { await AppStore.presentCodeRedemptionSheet() }
+                }
             }
             .font(.system(size: 14))
             .foregroundColor(.gray)

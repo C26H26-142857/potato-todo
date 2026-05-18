@@ -51,6 +51,9 @@
             ReferencedContainer = "container:&#x571f;&#x8c46;ToDo.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
+      <StoreKitConfigurationFileReference
+         identifier = "../../&#x571f;&#x8c46;ToDo/Products.storekit">
+      </StoreKitConfigurationFileReference>
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "Release"
