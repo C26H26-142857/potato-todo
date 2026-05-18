@@ -30,6 +30,7 @@ struct PaywallView: View {
 
             }
             .padding(.horizontal, 20)
+            .padding(.top, 10)
             .padding(.bottom, 6)
 
             VStack(alignment: .leading, spacing: 8) {
