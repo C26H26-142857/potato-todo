@@ -91,7 +91,7 @@ struct PaywallView: View {
                     Task { await store.restore() }
                 }
                 Button("兑换代码") {
-                    Task { await AppStore.presentCodeRedemptionSheet() }
+                    SKPaymentQueue.default().presentCodeRedemptionSheet()
                 }
             }
             .font(.system(size: 14))
